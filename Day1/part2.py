@@ -1,6 +1,6 @@
 import re
 
-def num_to_str(num_string:str):
+def str_to_num(num_string:str):
     conversion = {
         "one": 1,
         "two": 2,
@@ -14,28 +14,27 @@ def num_to_str(num_string:str):
     }
     return str(conversion.get(num_string))
 
-def substitute_string(line:str):
-    print(line)
+def get_num(line:str, first_last:str):
+    index = 0
+    updated_line = line
+    if first_last.lower() == "l":
+        index = -1
     match_strings = re.findall('(?=(one|two|three|four|five|six|seven|eight|nine))', line)
     if len(match_strings) > 0:
-        first_numstr = match_strings[0]
-        last_numstr = match_strings[-1]
-        line = re.sub(first_numstr, num_to_str(first_numstr), line, 1)
-        line = re.sub(last_numstr, num_to_str(last_numstr), line)
-        print(f"\t{line}")
-    return line
+        num_str = match_strings[index]
+        updated_line = re.sub(num_str, str_to_num(num_str), line)
+    if index == -1:
+        return str(re.findall('(\d)(?!.*\d)', updated_line)[0])
+    else:
+        return str(re.findall('(\d)', updated_line)[0])
 
 inputfile = open('input.txt', 'r')
 lines = inputfile.readlines()
 total = 0
 
 for line in lines:
-    converted_line = substitute_string(line.strip())
-    firstnumber = re.findall('(\d)', converted_line)[0]
-    lastnumber = re.findall('(\d)(?!.*\d)', converted_line)[0]
-    fullnumber = "{}{}".format(firstnumber, lastnumber)
-    print(f"{total} + {fullnumber} = {total + int(fullnumber)}")
-    total += int(fullnumber)
-    
-
+    first_num = get_num(line.strip(), 'f')
+    last_num = get_num(line.strip(), 'l')
+    full_num = f"{first_num}{last_num}"
+    total += int(full_num)
 print(total)
